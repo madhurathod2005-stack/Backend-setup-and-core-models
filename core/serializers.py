@@ -12,6 +12,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '_all'   # ✅ Correct: double underscores, not '_all'
+        read_only_fields = ['owner']
 
 
 class TaskSerializer(serializers.ModelSerializer):
