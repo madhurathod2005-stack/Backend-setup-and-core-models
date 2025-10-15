@@ -1,8 +1,8 @@
 # core/urls.py
 
 from django.urls import path, include
-from .views import ProjectListCreateView, ProjectDetailView
 from rest_framework import routers
+from .views import ProjectListCreateView, ProjectDetailView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from core.views import (
     ProjectViewSet,
@@ -26,8 +26,6 @@ router.register(r'tasks', TaskViewSet, basename='task')
 urlpatterns = [
     # CRUD Endpoints for Projects and Tasks
     path('', include(router.urls)),
-    path('projects/', ProjectListCreateView.as_view(), name='project-list-create'),
-    path('projects/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),
 
     # JWT Token authentication endpoints
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -38,4 +36,6 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='login'),
     path('auth/profile/', ProfileView.as_view(), name='profile'),
     path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
+    path('projects/', ProjectListCreateView.as_view(), name='project-list-create'),
+    path('projects/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),
 ]

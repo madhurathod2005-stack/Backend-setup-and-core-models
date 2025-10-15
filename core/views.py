@@ -33,6 +33,30 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         # only show logged-in user's projects
         return Project.objects.filter(owner=self.request.user)
 
+class TasklistCreateView(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_queryset(self):
+        project_id = self.request.query_params.get('project')  # Filter tasks by project
+        if project_id:
+            return Task.objects.filter(owner=self.request.user, project_id=project_id)
+        # only show logged-in user's tasks
+        return Task.objects.filter(owner=self.request.user)
+    
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # only show logged-in user's tasks
+        return Task.objects.filter(owner=self.request.user)
+
 # ---------------------------------------------------
 #   PROJECT & TASK API VIEWSETS
 # ---------------------------------------------------

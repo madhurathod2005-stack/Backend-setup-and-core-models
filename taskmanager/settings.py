@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -138,7 +139,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
 }
 
@@ -156,9 +157,8 @@ if ENVIRONMENT == "development":
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-        "https://example.com",       #frontend domain
+        "https://example.com",       
         "https://www.example.com",
         "https://localhost:3000",
         "https://127.0.0.1:8000",
     ]
-
