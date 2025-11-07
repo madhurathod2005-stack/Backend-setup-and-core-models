@@ -23,7 +23,7 @@ from .serializers import (
 def home(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    tasks = Task.objects.all
+    tasks = Task.objects.filter(assigned_to=request.user)
     return render(request, 'home.html', {'tasks': tasks})
 
 def user_login(request):
@@ -50,6 +50,26 @@ def register(request):
         messages.success(request, 'User Registered Successfully!')
         return redirect('login')
     return render(request, 'register.html')
+
+def dashboard(request):
+    sort_by = request.GET.get("sort", "created_at")  
+    status_filter = request.GET.get("status", "all")  
+
+    tasks = Task.objects.filter(user=request.user)
+
+    if status_filter == "completed":
+        tasks = tasks.filter(is_completed=True)
+    elif status_filter == "pending":
+        tasks = tasks.filter(is_completed=False)
+
+    if sort_by == "name":
+        tasks = tasks.order_by("title")
+    elif sort_by == "recent":
+        tasks = tasks.order_by("-created_at")
+    else:
+        tasks = tasks.order_by("created_at")
+
+    return render(request, "core/dashboard.html", {"tasks": tasks})
 
 class ProjectListCreateView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
