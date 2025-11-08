@@ -52,15 +52,18 @@ def register(request):
     return render(request, 'register.html')
 
 def dashboard(request):
-    sort_by = request.GET.get("sort", "created_at")  
-    status_filter = request.GET.get("status", "all")  
+    if not request.user.is_authenticated:
+        return redirect('login')
 
-    tasks = Task.objects.filter(user=request.user)
+    sort_by = request.GET.get("sort", "created_at")
+    status_filter = request.GET.get("status", "all")
+
+    tasks = Task.objects.filter(owner=request.user)
 
     if status_filter == "completed":
-        tasks = tasks.filter(is_completed=True)
+        tasks = tasks.filter(completed=True)
     elif status_filter == "pending":
-        tasks = tasks.filter(is_completed=False)
+        tasks = tasks.filter(completed=False)
 
     if sort_by == "name":
         tasks = tasks.order_by("title")
@@ -69,7 +72,7 @@ def dashboard(request):
     else:
         tasks = tasks.order_by("created_at")
 
-    return render(request, "core/dashboard.html", {"tasks": tasks})
+    return render(request, "dashboard.html", {"tasks": tasks})
 
 class ProjectListCreateView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
