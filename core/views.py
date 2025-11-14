@@ -52,18 +52,15 @@ def register(request):
     return render(request, 'register.html')
 
 def dashboard(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+    sort_by = request.GET.get("sort", "created_at")  
+    status_filter = request.GET.get("status", "all")  
 
-    sort_by = request.GET.get("sort", "created_at")
-    status_filter = request.GET.get("status", "all")
-
-    tasks = Task.objects.filter(owner=request.user)
+    tasks = Task.objects.filter(user=request.user)
 
     if status_filter == "completed":
-        tasks = tasks.filter(completed=True)
+        tasks = tasks.filter(is_completed=True)
     elif status_filter == "pending":
-        tasks = tasks.filter(completed=False)
+        tasks = tasks.filter(is_completed=False)
 
     if sort_by == "name":
         tasks = tasks.order_by("title")
@@ -72,7 +69,7 @@ def dashboard(request):
     else:
         tasks = tasks.order_by("created_at")
 
-    return render(request, "dashboard.html", {"tasks": tasks})
+    return render(request, "core/dashboard.html", {"tasks": tasks})
 
 class ProjectListCreateView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
@@ -128,7 +125,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticated]
+def perform_create(self, serializer):
+    serializer.save(owner=self.request.user)
+
 
 
 # ---------------------------------------------------
