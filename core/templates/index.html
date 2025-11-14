@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Welcome, {{ request.user.username }}</h2>
+
+    <a href="{% url 'add_task' %}" class="btn btn-primary mb-3">Add New Task</a>
+
+    <!-- Filtering -->
+    <form method="GET" class="row g-2 mb-3">
+        <div class="col-auto">
+            <select name="status" class="form-control">
+                <option value="">All</option>
+                <option value="Pending" {% if request.GET.status == "Pending" %}selected{% endif %}>Pending</option>
+                <option value="Completed" {% if request.GET.status == "Completed" %}selected{% endif %}>Completed</option>
+            </select>
+        </div>
+
+        <div class="col-auto">
+            <select name="sort" class="form-control">
+                <option value="">Sort By</option>
+                <option value="asc" {% if request.GET.sort == "asc" %}selected{% endif %}>A to Z</option>
+                <option value="desc" {% if request.GET.sort == "desc" %}selected{% endif %}>Z to A</option>
+            </select>
+        </div>
+
+        <div class="col-auto">
+            <button class="btn btn-success">Apply</button>
+        </div>
+    </form>
+
+    <!-- Task Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.status }}</td>
+                <td>
+                    {% if task.status == "Pending" %}
+                    <a href="{% url 'complete_task' task.id %}" class="btn btn-success btn-sm">Complete</a>
+                    {% endif %}
+                    <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">No tasks found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
