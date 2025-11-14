@@ -1,1 +1,2 @@
 virtual_setup*zip filter=lfs diff=lfs merge=lfs -text
+virtual_setup*sqlite3 filter=lfs diff=lfs merge=lfs -text
